@@ -47,8 +47,8 @@ export async function updateEmployee({ id, name, birthday, salary }) {
   const SQL = `
   UPDATE employees
   SET
-    name=$2
-    birthday=$3
+    name=$2,
+    birthday=$3,
     salary=$4
   WHERE id = $1
   RETURNING *
@@ -64,7 +64,7 @@ export async function updateEmployee({ id, name, birthday, salary }) {
  * @returns undefined if employee with the given id does not exist
  */
 export async function deleteEmployee(id) {
-  const SQL = `DELETE FROM employees WHERE id = $1 RETURNING *`
+  const SQL = `DELETE FROM employees WHERE id = $1 RETURNING *`;
   const {
     rows: [employee],
   } = await db.query(SQL, [id])

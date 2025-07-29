@@ -1,6 +1,5 @@
 import express from "express";
 const router = express.Router();
-export default router;
 
 import { getEmployees,
          getEmployee,  
@@ -57,3 +56,5 @@ import { getEmployees,
         await deleteEmployee(req.employee.id)
         res.sendStatus(204)
     })
+
+    export default router;
