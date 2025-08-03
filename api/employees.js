@@ -12,8 +12,9 @@ import { getEmployees,
         .route("/")
         .get(async (req, res) => {
             const employees = await getEmployees()
-            res.status(200).send(employees, "Welcome to the Fullstack Employees API.")
-        })
+            res.status(200).send(employees)
+       })
+
         .post(async (req, res) => {
             if(!req.body) return res.status(400).send("Request must have a body")
             
