@@ -1,44 +1,22 @@
 import express from "express";
 const router = express.Router();
 
-import {
-  getEmployees,
-  getEmployee,
-  createEmployee,
-  deleteEmployee,
-  updateEmployee,
-} from "#db/queries/employees";
+import { getEmployees,
+         getEmployee,  
+         createEmployee, 
+         deleteEmployee, 
+         updateEmployee 
+    } from "#db/queries/employees";
 
-// Middleware to validate and load employee by ID
-router.param("id", async (req, res, next, id) => {
-     if (!/^\d+$/.test(id))
-            return res.status(400).send("ID must be positive int.")
+    router
+        .route("/")
+        .get(async (req, res) => {
+            const employees = await getEmployees()
+            res.status(200).send(employees)
+       })
 
-        const employee = await getEmployee(id)
-        if(!employee) return res.status(404).send("Employee not found")
-
-        req.employee = employee
-        next()
-    })
-
-// GET /
-router.get("/", (req, res) => {
-  res.send("Welcome to the Fullstack Employees API.");
-});
-
-// GET /employees
-router.get("/employees", async (req, res, next) => {
-  try {
-    const employees = await getEmployees();
-    res.status(200).json(employees);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// POST /employees
-router.post("/employees", async (req, res, next) => {
-  if(!req.body) return res.status(400).send("Request must have a body")
+        .post(async (req, res) => {
+            if(!req.body) return res.status(400).send("Request must have a body")
             
             const { name, birthday, salary } = req.body;
             if (!name || !birthday || !salary)
@@ -48,13 +26,21 @@ router.post("/employees", async (req, res, next) => {
             res.status(201).send(employee)
         })
 
-// GET /employees/:id
-router.get("/employees/:id", (req, res) => {
-  res.status(200).json(req.employee);
-});
+    router.param("id", async (req, res, next, id) => {
+        if (!/^\d+$/.test(id))
+            return res.status(400).send("ID must be positive int.")
 
-// PUT /employees/:id
-router.put('/employees/:id', async (req, res) => {
+        const employee = await getEmployee(id)
+        if(!employee) return res.status(404).send("Employee not found")
+
+        req.employee = employee
+        next()
+    })
+
+    router.route("/:id").get((req, res) => {
+        res.send(req.employee)
+    })
+    .put(async (req, res) => {
         if (!req.body) return res.status(400).json("REQ must have body")
         const { name, birthday, salary } = req.body
         if (!name || !birthday || !salary)
@@ -67,15 +53,9 @@ router.put('/employees/:id', async (req, res) => {
         })
         res.send(employee)
     })
+    .delete(async (req, res) => {
+        await deleteEmployee(req.employee.id)
+        res.sendStatus(204)
+    })
 
-// DELETE /employees/:id
-router.delete("/employees/:id", async (req, res, next) => {
-  try {
-    await deleteEmployee(req.employee.id);
-    res.sendStatus(204);
-  } catch (err) {
-    next(err);
-  }
-});
-
-export default router;
+    export default router;
