@@ -1,14 +1,16 @@
 import express from "express";
+import employeeRouter from "#api/employees"
 const app = express();
-export default app;
 
-import employeesRouter from "#api/employees"
+app.use(express.json()); // This is critical for req.body to work
 
-app.use(express.json())
-
-app.use("/employees", employeesRouter)
+app.use("/", employeeRouter);
 
 app.use((err, req, res, next) => {
     console.error(err)
     res.status(500).send("Something went wrong")
 })
+
+export default app;
+
+
